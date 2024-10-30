@@ -122,7 +122,7 @@ export const CalorieCalculatorPage = () => {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen px-2">
+        <div className="flex flex-col items-center justify-center min-h-screen px-1">
             {isLoading && (
                 <LoadingSpinner />
             )}
@@ -134,7 +134,6 @@ export const CalorieCalculatorPage = () => {
             </div> */}
 
             <div className="container p-5 bg-base-100 shadow-xl rounded-lg">
-                <h1 className="text-2xl md:text-3xl font-bold text-center mb-4">Calorie Calculator</h1>
                 <label htmlFor="upload" className="btn btn-primary cursor-pointer mb-4">
                     Upload your food image
                 </label>
