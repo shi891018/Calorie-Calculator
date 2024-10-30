@@ -18,10 +18,7 @@ async function getCompletion(messages,response_format) {
         'api-key': apiKey
       }
     });
-    // console.log(response.data);
-    console.log(response.data.choices[0].message);
     return response.data.choices[0].message.content;
-    //console.log(response.choices[0].content);
   } catch (error) {
     console.error('Error fetching completion:', error);
   }
@@ -50,11 +47,18 @@ async function detectFoodAndCalories(base64Image) {
                 {
                     type: "text",
                     text: `
-                    Identify the food in this picture and estimate the calories with cal unit. \n
+                    Identify the food in this picture.
+                    Estimate the calories in Cal. unit. \n
+                    Estimate the carbohydrate and sugars in g unit. \n
                     Tell the name of the food only in Chinese.\n\n
                     Please return the content in JSON format.
                     example \n
-                    {'items': ['ice', 'apple'], 'total_calories': xx }"
+                    {
+                        'items': ['ice', 'apple'],
+                        'total_calories': xx,
+                        'total_carbohydrate': xx,
+                        'total_sugars': xx
+                    }
                     `
                     },
                 {
@@ -72,11 +76,13 @@ async function detectFoodAndCalories(base64Image) {
         console.log("Sending request to Azure OpenAI")
         const response = await getCompletion(messages,response_format)
         const parsedData = JSON.parse(response);
-
+        console.log("Response from Azure OpenAI", parsedData)
         // Return the extracted items and total_calories from the parsed JSON
         return {
             items: parsedData.items,
-            count: parsedData.total_calories
+            count: parsedData.total_calories,
+            carbonhydrate: parsedData.total_carbohydrate,
+            sugars: parsedData.total_sugars
         };
     } catch (error) {
         console.error('API call failed:', error);
@@ -89,10 +95,10 @@ export default async function handler(req) {
     if (req.method === 'POST') {
         try {
             const { image } = await req.json(); // Parse the image from the POST request's body
-            const { items, count } = await detectFoodAndCalories(image);
+            const { items, count, carbonhydrate, sugars } = await detectFoodAndCalories(image);
 
             // Create and return a successful response
-            return new Response(JSON.stringify({ items, count, success: true }), {
+            return new Response(JSON.stringify({ items, count, carbonhydrate, sugars, success: true }), {
                 headers: { 'Content-Type': 'application/json' },
                 status: 200
             });

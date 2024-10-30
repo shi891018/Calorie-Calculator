@@ -8,6 +8,8 @@ export const CalorieCalculatorPage = () => {
     const [uploadedImage, setUploadedImage] = useState(null);
     const [foodItems, setFoodItems] = useState([]);
     const [totalCalories, setTotalCalories] = useState(0);
+    const [totalCarbonhydrate, setTotalCarbonhydrate] = useState(0);
+    const [totalSugars, setTotalSugars] = useState(0);
     const [isLoading, setLoading] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
@@ -60,8 +62,11 @@ export const CalorieCalculatorPage = () => {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
+                    console.log(data)
                     setFoodItems(data.items);
                     setTotalCalories(data.count);
+                    setTotalCarbonhydrate(data.carbonhydrate)
+                    setTotalSugars(data.sugars)
                 } else {
                     setShowAlert(true);
                     setAlertMessage(data.message);
@@ -107,8 +112,10 @@ export const CalorieCalculatorPage = () => {
                 </div>
                 <div className="divider divider-horizontal"></div>
                 <div className="py-4 px-4 text-center">
-                    <h3 className="text-lg md:text-xl font-semibold text-gray-700">Total Calories:</h3>
-                    <p className="text-2xl font-bold text-blue-600">{totalCalories} cal</p>
+                    {/* <h3 className="text-lg md:text-xl font-semibold text-gray-700">Results</h3> */}
+                    <p className="text-2xl font-bold text-blue-600"><span>Total Carbonhydrate: </span>{totalCarbonhydrate} g</p>
+                    <p className="text-2xl font-bold text-blue-600"><span>Total Surgars: </span>{totalSugars} g</p>
+                    <p className="text-2xl font-bold text-blue-600"><span>Total Calories: </span>{totalCalories} Cal.</p>
                 </div>
             </div>
         );
