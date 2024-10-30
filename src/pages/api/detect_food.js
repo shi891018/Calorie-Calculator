@@ -1,4 +1,5 @@
 export const runtime = 'experimental-edge';
+const axios = require('axios');
 
 export const config = {
     api: {
@@ -6,11 +7,28 @@ export const config = {
     },
 }
 
+const apiKey = process.env.OPENAI_API_KEY;
+const endpoint = process.env.OPENAI_ENDPOINT;
+
+async function getCompletion(messages,response_format) {
+  try {
+    const response = await axios.post(endpoint, {messages,response_format}, {
+      headers: {
+        'Content-Type': 'application/json',
+        'api-key': apiKey
+      }
+    });
+    // console.log(response.data);
+    console.log(response.data.choices[0].message);
+    return response.data.choices[0].message.content;
+    //console.log(response.choices[0].content);
+  } catch (error) {
+    console.error('Error fetching completion:', error);
+  }
+}
+
 // Function to detect food and calories from a base64 encoded image
 async function detectFoodAndCalories(base64Image) {
-    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_AI_API_KEY;
-    const model = 'gemini-pro-vision'; // Specified model for detection
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
     // Extract MIME type and pure base64 data from the image string
     const match = base64Image.match(/^data:(image\/\w+);base64,(.*)$/);
@@ -21,48 +39,39 @@ async function detectFoodAndCalories(base64Image) {
     const mimeType = match[1];
     const base64Data = match[2];
 
-    const requestBody = {
-        contents: [
-            {
-                parts: [
-                    {
-                        text: 'Identify the food in this picture and estimate the calories. Please make sure to return the content in this structure as JSON. {"items": ["ice", "apple"], "total_calories": xx} Just return JSON, do not include other content.'
+    const messages = [
+        {
+            "role": "system",
+            "content": "you're a helpful assistant that talks like a pirate"
+        },
+        {
+            "role": "user",
+            "content": [
+                {
+                    type: "text",
+                    text: `
+                    Identify the food in this picture and estimate the calories with cal unit. \n
+                    Tell the name of the food only in Chinese.\n\n
+                    Please return the content in JSON format.
+                    example \n
+                    {'items': ['ice', 'apple'], 'total_calories': xx }"
+                    `
                     },
-                    {
-                        inline_data: {
-                            mime_type: mimeType,
-                            data: base64Data
-                        }
+                {
+                    type: "image_url",
+                    image_url: {
+                        url: `data:${mimeType};base64,${base64Data}`
                     }
-                ]
-            }
-        ]
-    };
+                }
+            ]
+        }
+    ]
+    const response_format = {"type": "json_object"}
 
     try {
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestBody)
-        });
-
-        if (!response.ok) {
-            throw new Error(`API call failed with status: ${response.status}, ${await response.text()}`);
-        }
-
-        const data = await response.json();
-        const text = data.candidates[0].content.parts[0].text;
-        const regex = /\{.*?\}/s; // The 's' flag allows '.' to match newline characters
-        const match = text.match(regex);
-
-        if (!match) {
-            throw new Error('No valid JSON found in the response.');
-        }
-
-        const jsonStr = match[0];
-        const parsedData = JSON.parse(jsonStr);
+        console.log("Sending request to Azure OpenAI")
+        const response = await getCompletion(messages,response_format)
+        const parsedData = JSON.parse(response);
 
         // Return the extracted items and total_calories from the parsed JSON
         return {

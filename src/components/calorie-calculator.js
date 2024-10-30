@@ -38,10 +38,10 @@ export const CalorieCalculatorPage = () => {
     // Component for uploading images
     const ImageUpload = ({ onUpload, uploadedImage }) => {
         return (
-            <div className="text-center p-4">
+            <div className="text-center">
                 <input id="upload" type="file" accept="image/*" onChange={onUpload} className="hidden" />
                 <div className="image-container h-[380px] md:h-[200px] lg:h-[380px] w-full bg-white rounded-lg overflow-hidden">
-                    {uploadedImage && <img src={uploadedImage} alt="Uploaded Food" className="w-full h-full object-cover" />}
+                    {uploadedImage && <img src={uploadedImage} alt="Uploaded Food" className="w-full h-auto object-fit" />}
                 </div>
             </div>
         );
@@ -86,7 +86,7 @@ export const CalorieCalculatorPage = () => {
     // Component displaying the result of food detection
     const FoodDetection = () => {
         if (foodItems.length === 0) {
-            return <div className="md:flex-1 h-auto flex flex-col justify-between bg-base-100 rounded-box shadow">
+            return <div className="mt-5 md:flex-1 h-auto flex flex-col justify-between bg-base-100 rounded-box shadow">
                 <h2 className="text-xl md:text-2xl font-bold text-center mb-4 text-gray-700 py-4">
                     Your food analysis report
                 </h2>
@@ -94,7 +94,7 @@ export const CalorieCalculatorPage = () => {
         }
 
         return (
-            <div className="md:flex-1 h-auto flex flex-col justify-between bg-base-100 rounded-box shadow">
+            <div className="mt-5 md:flex-1 h-auto flex flex-col justify-between bg-base-100 rounded-box shadow">
                 <div className="p-4">
                     <h2 className="text-xl md:text-2xl font-bold text-center mb-4 text-gray-700">Detected Food Items</h2>
                     <div className="flex flex-wrap gap-2 justify-center items-center">
@@ -119,36 +119,34 @@ export const CalorieCalculatorPage = () => {
             {isLoading && (
                 <LoadingSpinner />
             )}
-            <div className="alert alert-info bg-blue-100 shadow-lg max-w-4xl w-full mb-4">
+            {/* <div className="alert alert-info bg-blue-100 shadow-lg max-w-4xl w-full mb-4">
                 <div>
                     <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     <span>This is a Free Online Tool.Please note that we use Google Gemini AI, which has a limit of 2 requests per minute. If you encounter any errors, please try again.</span>
                 </div>
-            </div>
+            </div> */}
 
-            <div className="container max-w-4xl p-5 bg-base-100 shadow-xl rounded-lg">
+            <div className="container p-5 bg-base-100 shadow-xl rounded-lg">
                 <h1 className="text-2xl md:text-3xl font-bold text-center mb-4">Calorie Calculator</h1>
                 <label htmlFor="upload" className="btn btn-primary cursor-pointer mb-4">
                     Upload your food image
                 </label>
 
                 <div className="flex flex-col md:flex-row gap-4 items-start">
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-full">
                         <div className="image-upload-area border-2 border-dashed h-[380px] md:h-[200px] lg:h-[380px] border-gray-300 rounded-lg flex justify-center items-center relative text-center bg-white">
                             <ImageUpload onUpload={handleImageUpload} uploadedImage={uploadedImage} />
                             {!uploadedImage && (
-                                <div className="absolute inset-0 flex flex-col justify-center items-center text-gray-500">
-                                    <p>No image uploaded</p>
+                                <div className=" absolute inset-0 flex flex-col justify-center items-center text-gray-500">
+                                    <p >No image uploaded</p>
                                     <p className="mt-2">Your uploaded image will appear here</p>
                                 </div>
                             )}
                         </div>
                     </div>
-
-
-
-                    <FoodDetection />
                 </div>
+                <FoodDetection />
+
             </div>
 
             <FAQSection />
