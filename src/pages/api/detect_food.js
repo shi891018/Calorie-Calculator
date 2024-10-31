@@ -39,7 +39,7 @@ async function detectFoodAndCalories(base64Image) {
     const messages = [
         {
             "role": "system",
-            "content": "you're a helpful assistant that talks like a pirate"
+            "content": "You're a helpful assistant who helps estimate the calories, carbohydrates, and sugars in food images."
         },
         {
             "role": "user",
@@ -47,11 +47,17 @@ async function detectFoodAndCalories(base64Image) {
                 {
                     type: "text",
                     text: `
-                    Identify the food in this picture.
-                    Estimate the calories in Cal. unit. \n
-                    Estimate the carbohydrate and sugars in g unit. \n
+                    Task description: \n
+                    Identify the food in this picture.\n
+                    Estimate the calories in Cal. unit.\n
+                    Estimate the carbohydrate and sugars in g unit.\n
                     Tell the name of the food only in Chinese.\n\n
-                    Please return the content in JSON format.
+                    Requirement:\n
+                    The weight of the food should be taken into consideration for the Estimation.\n
+                    If the weight is provided, please use the weight to estimate the calories, carbohydrate, and sugars.\n
+                    If the weight is not provided, please estimate the weight.\n
+
+                    Please return the content in JSON format.\n\n
                     example \n
                     {
                         'items': ['ice', 'apple'],
